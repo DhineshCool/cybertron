@@ -686,6 +686,12 @@ config MODS_2ND_GEN
 	help
 	  This option enables the mods 2nd generation hw designation.
 
+config FORCE_FAST_CHARGE
+	bool "Force faster charge rate for USB"
+	default y
+	help
+	  This drivers allows users to override default charge rate for USB.
+
 source "drivers/misc/awinic/aw869x/Kconfig"
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
