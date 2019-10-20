@@ -158,8 +158,8 @@ static int exfat_show_options(struct seq_file *m, struct dentry *root)
 		seq_puts(m, ",errors=panic");
 	else
 		seq_puts(m, ",errors=remount-ro");
-	if (opts->discard)
-		seq_puts(m, ",discard");
+//	if (opts->discard)
+	seq_puts(m, ",discard");
 	if (opts->time_offset)
 		seq_printf(m, ",time_offset=%d", opts->time_offset);
 	return 0;
