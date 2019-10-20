@@ -34,6 +34,7 @@
 #include <asm/cacheflush.h>
 #endif
 #include <linux/device.h>
+#include <linux/msm_dma_iommu_mapping.h>
 
 #include "ion.h"
 
@@ -98,6 +99,7 @@ struct ion_buffer {
 	char task_comm[TASK_COMM_LEN];
 	pid_t pid;
 	char alloc_client_name[ION_ALLOC_CLIENT_NAME_SIZE];
+	struct msm_iommu_data iommu_data;
 };
 void ion_buffer_destroy(struct ion_buffer *buffer);
 
