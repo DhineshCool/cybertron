@@ -146,8 +146,8 @@ static int exfat_show_options(struct seq_file *m, struct dentry *root)
 	seq_printf(m, ",fmask=%04o,dmask=%04o", opts->fs_fmask, opts->fs_dmask);
 	if (opts->allow_utime)
 		seq_printf(m, ",allow_utime=%04o", opts->allow_utime);
-	if (opts->quiet)
-		seq_puts(m, ",quiet");
+//	if (opts->quiet)
+	seq_puts(m, ",quiet");
 	if (opts->utf8)
 		seq_puts(m, ",iocharset=utf8");
 	else if (sbi->nls_io)
