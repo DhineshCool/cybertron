@@ -1,98 +1,148 @@
-exfat-nofuse
-============
+exfat-linux
+This exFAT filesystem module for Linux kernel is a backport of the latest Linux mainline's exFAT drivers by Samsung.
 
-Linux non-fuse read/write kernel driver for the exFAT, FAT12, FAT16 and vfat (FAT32) file systems.<br />
-Originally ported from Android kernel v3.0.
+This project can be used for everyday Linux users by simply doing make && make install. Ubuntu users can simply add a PPA and start using it, without even downloading the code. This can also be directly dropped-in to an existing Linux kernel source for building the filesystem drivers inline, which should be useful for Android kernel developers.
 
-Kudos to ksv1986 for the mutex patch!<br />
-Thanks to JackNorris for being awesome and providing the clear_inode() patch.<br />
-<br />
-Big thanks to lqs for completing the driver!<br />
-Big thanks to benpicco for fixing 3.11.y compatibility!
+exfat-linux has been tested with all major LTS kernels ranging from v4.9 to v5.4 and the ones Canonical uses for Ubuntu: v4.9, v4.14, v4.19, v5.4 and v4.15, v5.3, and v5.6.
 
+It's also been tested with x86(i386), x86_64(amd64), arm32(AArch32) and arm64(AArch64).
 
-Special thanks to github user AndreiLux for spreading the word about the leak!<br />
+Linux kernels since v5.4 includes an exFAT driver, but it is an extremely outdated version from 2016. This was later revised by Samsung directly with v5.7.
 
+People on v5.7 kernel or higher can just use the bundled exFAT drivers.
 
-Installing as a stand-alone module:
-====================================
+People on v5.4+ are highly recommended to use this drivers.
 
-    make
-    sudo make install
+Support for kernel versions lower than v4.9 were dropped for easier maintenance. For people interested in exFAT support for said kernels, please use the old branch. It still works nicely and it's actively being shipped to production smartphones.
 
-To load the driver manually, run this as root:
+exfat-linux is planned to be maintained until Android devices with v5.7+ LTS kernel become more common.
 
-    modprobe exfat
+Disclaimer
+● Original authorship and copyright: Samsung
+● Maintainer of exfat-linux: Park Ju Hyung(arter97)
+Using exfat-linux
+● Ubuntu PPA
+If you're an Ubuntu user, you can simply add a PPA repository and start using the exFAT module.
 
-You may also specify custom toolchains by using CROSS_COMPILE flag, in my case:
->CROSS_COMPILE=../dorimanx-SG2-I9100-Kernel/android-toolchain/bin/arm-eabi-
+Ubuntu will handle upgrades automatically as well.
 
-Installing as a part of the kernel:
-======================================
+Add the exfat-linux repository
 
-Let's take [linux] as the path to your kernel source dir...
+sudo add-apt-repository ppa:arter97/exfat-linux
+sudo apt update
+Install the module
 
-	cd [linux]
-	cp -rvf exfat-nofuse [linux]/fs/exfat
+sudo apt install exfat-dkms
 
-edit [linux]/fs/Kconfig
-```
+This will use DKMS(Dynamic Kernel Module Support) and automatically build exFAT module for your current Ubuntu installation.
+
+● Manually installing the module
+Download the code
+
+git clone https://github.com/arter97/exfat-linux
+cd exfat-linux
+Build
+
+make
+
+Install
+
+sudo make install
+
+This will install the module to your currently running kernel.
+
+If you're running a v5.4+ kernel, it is highly recommended to reboot at this point to prevent the existing staging exFAT drivers to load.
+
+And finally load
+
+sudo modprobe exfat
+
+If you upgrade the kernel, you'll have to repeat this process.
+
+If you want to update exfat-linux to the latest version, you'll have to repeat this process.
+
+● Merging the drivers to existing Linux kernel source
+If you're using git, using git subtree or git submodule is highly recommended.
+
+Add this repository to fs/exfat
+
+Modify fs/Kconfig
+
  menu "DOS/FAT/NT Filesystems"
 
-  source "fs/fat/Kconfig"
- +source "fs/exfat/Kconfig"
-  source "fs/ntfs/Kconfig"
-  endmenu
-```
-  
+ source "fs/fat/Kconfig"
++source "fs/exfat/Kconfig"
+ source "fs/ntfs/Kconfig"
+ endmenu
+Modify fs/Makefile
+ obj-$(CONFIG_FAT_FS)    += fat/
++obj-$(CONFIG_EXFAT_FS)  += exfat/
+ obj-$(CONFIG_BFS_FS)    += bfs/
+And you're good to go!
 
-edit [linux]/fs/Makefile
-```
-  obj-$(CONFIG_FAT_FS)    += fat/
- +obj-$(CONFIG_EXFAT_FS)  += exfat/
-  obj-$(CONFIG_BFS_FS)    += bfs/
-```
+Benchmarks
+For reference, existing exFAT implementations were tested and compared on a server running Ubuntu 16.04 with Linux kernel 4.14 under a contained virtual machine.
 
-	cd [linux]
-	make menuconfig
+Linux 4.14 was used as higher LTS kernels don't work with [exfat-nofuse] at the time of testing.
 
-Go to:
-> File systems > DOS/FAT/NT
->   check exfat as MODULE (M)
->   (437) Default codepage for exFAT
->   (utf8) Default iocharset for exFAT
+The new base backported from mainline is not benchmarked yet.
 
-> ESC to main menu
-> Save an Alternate Configuration File
-> ESC ESC
+● Ramdisk
+fio sequential I/O
+Implementation	Base	Read	Write
+exfat-linux	2.2.0	7042 MB/s	2173 MB/s
+[exfat-nofuse]	1.2.9	6849 MB/s	1961 MB/s
+exfat-fuse	N/A	3097 MB/s	1710 MB/s
+ext4	N/A	7352 MB/s	3333 MB/s
+fio random I/O
+Implementation	Base	Read	Write
+exfat-linux	2.2.0	760 MB/s	2222 MB/s
+[exfat-nofuse]	1.2.9	760 MB/s	2160 MB/s
+exfat-fuse	N/A	1.7 MB/s	1.6 MB/s
+ext4	N/A	747 MB/s	2816 MB/s
+● NVMe device
+fio sequential I/O
+Implementation	Base	Read	Write
+exfat-linux	2.2.0	1283 MB/s	1832 MB/s
+[exfat-nofuse]	1.2.9	1285 MB/s	1678 MB/s
+exfat-fuse	N/A	751 MB/s	1464 MB/s
+ext4	N/A	1283 MB/s	3356 MB/s
+fio random I/O
+Implementation	Base	Read	Write
+exfat-linux	2.2.0	26 MB/s	1885 MB/s
+[exfat-nofuse]	1.2.9	24 MB/s	1827 MB/s
+exfat-fuse	N/A	1.6 MB/s	1.6 MB/s
+ext4	N/A	29 MB/s	2821 MB/s
+Mount options
+uid
 
-build your kernel
+gid
 
-Have fun.
+umask
 
+dmask
 
-Installing as a DKMS module:
-=================================
+fmask
 
-You can have even more fun with exfat-nofuse by installing it as a DKMS module has the main advantage of being auto-compiled (and thus, possibly surviving) between kernel upgrades.
+allow_utime
 
-First, get dkms. On Ubuntu this should be:
+iocharset
 
-	sudo apt install dkms
+quiet
 
-Then copy the root of this repository to /usr/share:
+time_offset
 
-	sudo cp -R . /usr/src/exfat-1.2.8 (or whatever version number declared on dkms.conf is)
-	sudo dkms add -m exfat -v 1.2.8
+Please refer to the vfat's documentation.
+errors=continue
 
-Build and load the module:
+Keep going on a filesystem error.
+errors=panic
 
-	sudo dkms build -m exfat -v 1.2.8
-	sudo dkms install -m exfat -v 1.2.8
+Panic and halt the machine if an error occurs.
+errors=remount-ro
 
-Now you have a proper dkms module that will work for a long time... hopefully.
+Remount the filesystem read-only on an error.
+discard
 
-
-
-Free Software for the Free Minds!
-=================================
+Enable the use of discard/TRIM commands to ensure flash storage doesn't run out of free blocks. This option may introduce latency penalty on file removal operations.
+Enjoy!
