@@ -22,6 +22,8 @@
 
 #define EXFAT_CLUSTERS_UNTRACKED (~0u)
 
+#define current_time(x)		CURRENT_TIME_SEC
+
 /*
  * exfat error flags
  */

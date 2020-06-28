@@ -51,30 +51,19 @@ ssize_t __exfat_getxattr(const char *name, void *value, size_t size)
 	return strlen(default_xattr);
 }
 
-static int exfat_xattr_get(const struct xattr_handler *handler,
-		struct dentry *dentry, struct inode *inode,
-		const char *name, void *buffer, size_t size)
-{
-	return __exfat_getxattr(name, buffer, size);
-}
-
-static int exfat_xattr_set(const struct xattr_handler *handler,
-		struct dentry *dentry, struct inode *inode,
-		const char *name, const void *value, size_t size,
-		int flags)
+int exfat_setxattr(struct dentry *dentry, const char *name, const void *value, size_t size, int flags)
 {
 	return __exfat_xattr_check_support(name);
 }
 
-static const struct xattr_handler exfat_xattr_handler = {
-	.prefix = "",  /* match anything */
-	.get = exfat_xattr_get,
-	.set = exfat_xattr_set,
-};
+ssize_t exfat_getxattr(struct dentry *dentry, const char *name, void *value, size_t size)
+{
+	return __exfat_getxattr(name, value, size);
+}
 
-const struct xattr_handler *exfat_xattr_handlers[] = {
-	&exfat_xattr_handler,
-	NULL
-};
+int exfat_removexattr(struct dentry *dentry, const char *name)
+{
+	return __exfat_xattr_check_support(name);
+}
 
 #endif /* CONFIG_EXFAT_VIRTUAL_XATTR */

@@ -9,6 +9,13 @@
 
 #include "exfat_fs.h"
 
+static int setattr_prepare(struct dentry *dentry, struct iattr *attr)
+{
+	struct inode *inode = dentry->d_inode;
+
+	return inode_change_ok(inode, attr);
+}
+
 static int exfat_cont_expand(struct inode *inode, loff_t size)
 {
 	struct address_space *mapping = inode->i_mapping;
@@ -382,5 +389,8 @@ const struct inode_operations exfat_file_inode_operations = {
 	.getattr     = exfat_getattr,
 #ifdef CONFIG_EXFAT_VIRTUAL_XATTR
 	.listxattr      = exfat_listxattr,
+	.setxattr       = exfat_setxattr,
+	.getxattr       = exfat_getxattr,
+	.removexattr    = exfat_removexattr,
 #endif
 };

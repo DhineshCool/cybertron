@@ -82,7 +82,7 @@ static int exfat_d_hash(const struct dentry *dentry, struct qstr *qstr)
 	struct nls_table *t = EXFAT_SB(sb)->nls_io;
 	const unsigned char *name = qstr->name;
 	unsigned int len = exfat_striptail_len(qstr->len, qstr->name);
-	unsigned long hash = init_name_hash(dentry);
+	unsigned long hash = init_name_hash();
 	int i, charlen;
 	wchar_t c;
 
@@ -97,8 +97,8 @@ static int exfat_d_hash(const struct dentry *dentry, struct qstr *qstr)
 	return 0;
 }
 
-static int exfat_d_cmp(const struct dentry *dentry, unsigned int len,
-		const char *str, const struct qstr *name)
+static int exfat_d_cmp(const struct dentry *parent, const struct dentry *dentry,
+		unsigned int len, const char *str, const struct qstr *name)
 {
 	struct super_block *sb = dentry->d_sb;
 	struct nls_table *t = EXFAT_SB(sb)->nls_io;
@@ -135,7 +135,7 @@ static int exfat_utf8_d_hash(const struct dentry *dentry, struct qstr *qstr)
 	struct super_block *sb = dentry->d_sb;
 	const unsigned char *name = qstr->name;
 	unsigned int len = exfat_striptail_len(qstr->len, qstr->name);
-	unsigned long hash = init_name_hash(dentry);
+	unsigned long hash = init_name_hash();
 	int i, charlen;
 	unicode_t u;
 
@@ -155,8 +155,8 @@ static int exfat_utf8_d_hash(const struct dentry *dentry, struct qstr *qstr)
 	return 0;
 }
 
-static int exfat_utf8_d_cmp(const struct dentry *dentry, unsigned int len,
-		const char *str, const struct qstr *name)
+static int exfat_utf8_d_cmp(const struct dentry *parent, const struct dentry *dentry,
+		unsigned int len, const char *str, const struct qstr *name)
 {
 	struct super_block *sb = dentry->d_sb;
 	unsigned int alen = exfat_striptail_len(name->len, name->name);
@@ -1351,21 +1351,12 @@ out:
 }
 
 static int exfat_rename(struct inode *old_dir, struct dentry *old_dentry,
-		struct inode *new_dir, struct dentry *new_dentry,
-		unsigned int flags)
+		struct inode *new_dir, struct dentry *new_dentry)
 {
 	struct inode *old_inode, *new_inode;
 	struct super_block *sb = old_dir->i_sb;
 	loff_t i_pos;
 	int err;
-
-	/*
-	 * The VFS already checks for existence, so for local filesystems
-	 * the RENAME_NOREPLACE implementation is equivalent to plain rename.
-	 * Don't support any other flags
-	 */
-	if (flags & ~RENAME_NOREPLACE)
-		return -EINVAL;
 
 	mutex_lock(&EXFAT_SB(sb)->s_lock);
 	old_inode = old_dentry->d_inode;
@@ -1438,5 +1429,8 @@ const struct inode_operations exfat_dir_inode_operations = {
 	.getattr	= exfat_getattr,
 #ifdef CONFIG_EXFAT_VIRTUAL_XATTR
 	.listxattr      = exfat_listxattr,
+	.setxattr       = exfat_setxattr,
+	.getxattr       = exfat_getxattr,
+	.removexattr    = exfat_removexattr,
 #endif
 };

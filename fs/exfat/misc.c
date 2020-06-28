@@ -105,7 +105,7 @@ void exfat_set_entry_time(struct exfat_sb_info *sbi, struct timespec64 *ts,
 	struct tm tm;
 	u16 t, d;
 
-	time64_to_tm(ts->tv_sec, 0, &tm);
+	time_to_tm(ts->tv_sec, 0, &tm);
 	t = (tm.tm_hour << 11) | (tm.tm_min << 5) | (tm.tm_sec >> 1);
 	d = ((tm.tm_year - 80) <<  9) | ((tm.tm_mon + 1) << 5) | tm.tm_mday;
 
