@@ -700,30 +700,27 @@
 			apc0_pwrcl_vreg: regulator {
 				regulator-name = "apc0_pwrcl_corner";
 				regulator-min-microvolt = <1>;
-				regulator-max-microvolt = <11>;
+				regulator-max-microvolt = <7>;
 
 				qcom,cpr-fuse-corners = <3>;
 				qcom,cpr-fuse-combos = <32>;
 				qcom,cpr-speed-bins = <4>;
-				qcom,cpr-speed-bin-corners = <11 11 11 11>;
-				qcom,cpr-corners = <11>;
-				qcom,cpr-corner-fmax-map = <2 4 11>;
+				qcom,cpr-speed-bin-corners = <7 7 7 7>;
+				qcom,cpr-corners = <7>;
+				qcom,cpr-corner-fmax-map = <2 4 7>;
 
 				qcom,cpr-voltage-ceiling =
-					<624000   664000   724000  788000
-					 1068000 1068000  1068000 1068000
-					 1068000 1140000  1140000>;
+					<624000  664000  762000  1048000 
+					 1048000 1059800 1067100>;
 
 				qcom,cpr-voltage-floor =
-					<568000   568000   596000   652000
-					 712000   744000   784000   844000
-					 844000   900000   900000>;
+					<568000   568000   594000   652000
+					 712000   744000   844000>;
 
 				qcom,corner-frequencies =
-					<300000000  614400000  883200000
-					1094400000 1382400000 1536000000
-					1728000000 1843200000 1881600000
-					1958400000 2016000000>;
+				        <300000000  614400000 1094400000
+					1382400000 1728000000 1881600000
+					2016000000>;
 
 				qcom,allow-voltage-interpolation;
 				qcom,allow-quotient-interpolation;
@@ -745,8 +742,7 @@
 
 				qcom,cpr-floor-to-ceiling-max-range =
 					<32000  32000  32000  40000  44000
-					 40000  40000  40000  40000  44000
-                                         40000>;
+					 40000  40000>;
 			};
 		};
 	};
@@ -800,18 +796,18 @@
 			apc1_perfcl_vreg: regulator {
 				regulator-name = "apc1_perfcl_corner";
 				regulator-min-microvolt = <1>;
-				regulator-max-microvolt = <14>;
+				regulator-max-microvolt = <11>;
 
 				qcom,cpr-fuse-corners = <5>;
 				qcom,cpr-fuse-combos = <32>;
 				qcom,cpr-speed-bins = <4>;
-				qcom,cpr-speed-bin-corners = <10 14 11 10>;
+				qcom,cpr-speed-bin-corners = <10 10 11 10>;
 				qcom,cpr-corners =
 					/* Speed bin 0 */
 					<10 10 10 10 10 10 10 10>,
 
 					/* Speed bin 1 */
-					<14 14 14 14 14 14 14 14>,
+					<10 10 10 10 10 10 10 10>,
 
 					/* Speed bin 2 */
 					<11 11 11 11 11 11 11 11>,
@@ -824,7 +820,7 @@
 					<2 4 6 9 10>,
 
 					/* Speed bin 1 */
-					<2 4 6 9 14>,
+					<2 4 6 9 10>,
 
 					/* Speed bin 2 */
 					<2 4 6 9 11>,
@@ -841,8 +837,7 @@
 					/* Speed bin 1 */
 					<624000  624000  724000  788000
 					 868000  868000  988000  988000
-					 988000  988000  1068000  1140000
-                                         1140000 1140000>,
+					 1068000 1140000>,
 
 					/* Speed bin 2 */
 					<724000  724000  724000  788000
@@ -862,9 +857,8 @@
 
 					/* Speed bin 1 */
 					<568000  568000  596000  652000
-					 712000  712000  744000  784000
-					 784000  788000  844000  844000
-                                         900000  900000>,
+					 712000  744000  784000  788000 
+				         844000  900000>,
 
 					/* Speed bin 2 */
 					<588000  588000  596000  652000
@@ -886,9 +880,8 @@
 					/* Speed bin 1 */
 					<300000000   787200000 1113600000
 					 1344000000 1516800000 1670400000
-					 1881600000 1958400000 2016000000
-                                         2150400000 2208000000 2380800000
-					 2457600000 2515200000>,
+                                         1881600000 2016000000 2208000000
+					 2457600000>,
 
 					/* Speed bin 2 */
 					<300000000   787200000 1113600000
@@ -939,8 +932,7 @@
 					/* Speed bin 1 */
 					<40000  40000  40000  40000
 					 40000  40000  40000  66000
-					 66000  40000  40000  40000 
-                                         40000  40000>,
+                                         66000  40000>,
 
 					/* Speed bin 2 */
 					<40000  40000  40000  40000
