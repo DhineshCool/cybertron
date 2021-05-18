@@ -118,4 +118,4 @@ all.config
 android/configs/android-*.cfg
 
 tests
-configs
+out
